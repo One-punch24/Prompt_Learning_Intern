@@ -1,0 +1,18 @@
+{
+    "os": "Windows-10-10.0.18362-SP0",
+    "python": "3.7.11",
+    "heartbeatAt": "2022-01-13T12:07:46.544997",
+    "startedAt": "2022-01-13T12:07:43.691332",
+    "docker": null,
+    "gpu": "GeForce GTX 1650",
+    "gpu_count": 1,
+    "cpu_count": 16,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "D:/GitHub/OnePunch/OnepunchPrompt_for_new_transformers/Prefix_tune.py",
+    "codePath": "Prefix_tune.py",
+    "host": "LAPTOP-KL4I1JEB",
+    "username": "14828",
+    "executable": "D:\\anaconda\\envs\\myprompt\\python.exe"
+}

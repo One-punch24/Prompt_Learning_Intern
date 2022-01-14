@@ -1,0 +1,160 @@
+2022-01-06 14:52:15,010 INFO    MainThread:2556 [internal.py:wandb_internal():90] W&B internal server running at pid: 2556, started at: 2022-01-06 14:52:15.009050
+2022-01-06 14:52:15,013 INFO    WriterThread:2556 [datastore.py:open_for_write():77] open: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\run-2ek5b478.wandb
+2022-01-06 14:52:15,013 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: check_version
+2022-01-06 14:52:15,016 DEBUG   SenderThread:2556 [sender.py:send():234] send: header
+2022-01-06 14:52:15,016 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: check_version
+2022-01-06 14:52:15,486 DEBUG   SenderThread:2556 [sender.py:send():234] send: run
+2022-01-06 14:52:15,880 INFO    SenderThread:2556 [dir_watcher.py:__init__():169] watching files in: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files
+2022-01-06 14:52:15,880 INFO    SenderThread:2556 [sender.py:_start_run_threads():807] run started: 2ek5b478 with start time 1641451933
+2022-01-06 14:52:15,880 DEBUG   SenderThread:2556 [sender.py:send():234] send: summary
+2022-01-06 14:52:15,880 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: run_start
+2022-01-06 14:52:15,882 INFO    SenderThread:2556 [sender.py:_save_file():939] saving file wandb-summary.json with policy end
+2022-01-06 14:52:15,901 DEBUG   HandlerThread:2556 [meta.py:__init__():40] meta init
+2022-01-06 14:52:15,901 DEBUG   HandlerThread:2556 [meta.py:__init__():54] meta init done
+2022-01-06 14:52:15,901 DEBUG   HandlerThread:2556 [meta.py:probe():214] probe
+2022-01-06 14:52:15,965 DEBUG   HandlerThread:2556 [git.py:repo():33] git repository is invalid
+2022-01-06 14:52:15,965 DEBUG   HandlerThread:2556 [meta.py:_save_pip():58] save pip
+2022-01-06 14:52:15,966 DEBUG   HandlerThread:2556 [meta.py:_save_pip():72] save pip done
+2022-01-06 14:52:15,966 DEBUG   HandlerThread:2556 [meta.py:_save_conda():79] save conda
+2022-01-06 14:52:15,973 ERROR   HandlerThread:2556 [meta.py:_save_conda():88] Error saving conda packages
+Traceback (most recent call last):
+  File "D:\anaconda\envs\myprompt\lib\site-packages\wandb\sdk\internal\meta.py", line 85, in _save_conda
+    ["conda", "env", "export"], stdout=f, stderr=subprocess.DEVNULL
+  File "D:\anaconda\envs\myprompt\lib\subprocess.py", line 339, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "D:\anaconda\envs\myprompt\lib\subprocess.py", line 800, in __init__
+    restore_signals, start_new_session)
+  File "D:\anaconda\envs\myprompt\lib\subprocess.py", line 1207, in _execute_child
+    startupinfo)
+FileNotFoundError: [WinError 2] 系统找不到指定的文件。
+2022-01-06 14:52:15,974 DEBUG   HandlerThread:2556 [meta.py:_save_conda():89] save conda done
+2022-01-06 14:52:15,974 DEBUG   HandlerThread:2556 [meta.py:probe():252] probe done
+2022-01-06 14:52:15,984 DEBUG   SenderThread:2556 [sender.py:send():234] send: files
+2022-01-06 14:52:15,984 INFO    SenderThread:2556 [sender.py:_save_file():939] saving file wandb-metadata.json with policy now
+2022-01-06 14:52:15,996 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: stop_status
+2022-01-06 14:52:15,997 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: stop_status
+2022-01-06 14:52:16,880 INFO    Thread-12 :2556 [dir_watcher.py:_on_file_created():217] file/dir created: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\output.log
+2022-01-06 14:52:16,881 INFO    Thread-12 :2556 [dir_watcher.py:_on_file_created():217] file/dir created: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\wandb-metadata.json
+2022-01-06 14:52:16,881 INFO    Thread-12 :2556 [dir_watcher.py:_on_file_created():217] file/dir created: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\requirements.txt
+2022-01-06 14:52:16,881 INFO    Thread-12 :2556 [dir_watcher.py:_on_file_created():217] file/dir created: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\wandb-summary.json
+2022-01-06 14:52:16,881 INFO    Thread-12 :2556 [dir_watcher.py:_on_file_created():217] file/dir created: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\conda-environment.yaml
+2022-01-06 14:52:17,019 INFO    Thread-15 :2556 [upload_job.py:push():137] Uploaded file C:\Users\14828\AppData\Local\Temp\tmpfja15tfkwandb\3qijqzfb-wandb-metadata.json
+2022-01-06 14:52:18,879 INFO    Thread-12 :2556 [dir_watcher.py:_on_file_modified():230] file/dir modified: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\output.log
+2022-01-06 14:52:21,521 DEBUG   SenderThread:2556 [sender.py:send():234] send: telemetry
+2022-01-06 14:52:21,521 DEBUG   SenderThread:2556 [sender.py:send():234] send: exit
+2022-01-06 14:52:21,521 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:21,521 INFO    SenderThread:2556 [sender.py:send_exit():366] handling exit code: 1
+2022-01-06 14:52:21,522 INFO    SenderThread:2556 [sender.py:send_exit():368] handling runtime: 5
+2022-01-06 14:52:21,522 INFO    SenderThread:2556 [sender.py:_save_file():939] saving file wandb-summary.json with policy end
+2022-01-06 14:52:21,522 INFO    SenderThread:2556 [sender.py:send_exit():374] send defer
+2022-01-06 14:52:21,522 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:21,523 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: defer
+2022-01-06 14:52:21,523 INFO    HandlerThread:2556 [handler.py:handle_request_defer():147] handle defer: 0
+2022-01-06 14:52:21,523 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: defer
+2022-01-06 14:52:21,523 INFO    SenderThread:2556 [sender.py:send_request_defer():383] handle sender defer: 0
+2022-01-06 14:52:21,523 INFO    SenderThread:2556 [sender.py:transition_state():387] send defer: 1
+2022-01-06 14:52:21,524 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: defer
+2022-01-06 14:52:21,524 INFO    HandlerThread:2556 [handler.py:handle_request_defer():147] handle defer: 1
+2022-01-06 14:52:21,641 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: defer
+2022-01-06 14:52:21,641 INFO    SenderThread:2556 [sender.py:send_request_defer():383] handle sender defer: 1
+2022-01-06 14:52:21,641 INFO    SenderThread:2556 [sender.py:transition_state():387] send defer: 2
+2022-01-06 14:52:21,641 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:21,641 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:21,641 DEBUG   SenderThread:2556 [sender.py:send():234] send: stats
+2022-01-06 14:52:21,642 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: defer
+2022-01-06 14:52:21,642 INFO    HandlerThread:2556 [handler.py:handle_request_defer():147] handle defer: 2
+2022-01-06 14:52:21,642 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: defer
+2022-01-06 14:52:21,642 INFO    SenderThread:2556 [sender.py:send_request_defer():383] handle sender defer: 2
+2022-01-06 14:52:21,642 INFO    SenderThread:2556 [sender.py:transition_state():387] send defer: 3
+2022-01-06 14:52:21,643 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: defer
+2022-01-06 14:52:21,643 INFO    HandlerThread:2556 [handler.py:handle_request_defer():147] handle defer: 3
+2022-01-06 14:52:21,643 DEBUG   SenderThread:2556 [sender.py:send():234] send: summary
+2022-01-06 14:52:21,643 INFO    SenderThread:2556 [sender.py:_save_file():939] saving file wandb-summary.json with policy end
+2022-01-06 14:52:21,644 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: defer
+2022-01-06 14:52:21,644 INFO    SenderThread:2556 [sender.py:send_request_defer():383] handle sender defer: 3
+2022-01-06 14:52:21,644 INFO    SenderThread:2556 [sender.py:transition_state():387] send defer: 4
+2022-01-06 14:52:21,644 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: defer
+2022-01-06 14:52:21,644 INFO    HandlerThread:2556 [handler.py:handle_request_defer():147] handle defer: 4
+2022-01-06 14:52:21,644 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: defer
+2022-01-06 14:52:21,644 INFO    SenderThread:2556 [sender.py:send_request_defer():383] handle sender defer: 4
+2022-01-06 14:52:21,742 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:21,884 INFO    Thread-12 :2556 [dir_watcher.py:_on_file_modified():230] file/dir modified: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\output.log
+2022-01-06 14:52:21,884 INFO    Thread-12 :2556 [dir_watcher.py:_on_file_modified():230] file/dir modified: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\wandb-summary.json
+2022-01-06 14:52:22,013 INFO    SenderThread:2556 [sender.py:transition_state():387] send defer: 5
+2022-01-06 14:52:22,013 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:22,014 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: defer
+2022-01-06 14:52:22,014 INFO    HandlerThread:2556 [handler.py:handle_request_defer():147] handle defer: 5
+2022-01-06 14:52:22,014 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: defer
+2022-01-06 14:52:22,014 INFO    SenderThread:2556 [sender.py:send_request_defer():383] handle sender defer: 5
+2022-01-06 14:52:22,014 INFO    SenderThread:2556 [dir_watcher.py:finish():283] shutting down directory watcher
+2022-01-06 14:52:22,116 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:22,886 INFO    SenderThread:2556 [dir_watcher.py:_on_file_modified():230] file/dir modified: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\config.yaml
+2022-01-06 14:52:22,886 INFO    SenderThread:2556 [dir_watcher.py:finish():313] scan: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files
+2022-01-06 14:52:22,887 INFO    SenderThread:2556 [dir_watcher.py:finish():327] scan save: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\conda-environment.yaml conda-environment.yaml
+2022-01-06 14:52:22,887 INFO    SenderThread:2556 [dir_watcher.py:finish():327] scan save: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\config.yaml config.yaml
+2022-01-06 14:52:22,888 INFO    SenderThread:2556 [dir_watcher.py:finish():327] scan save: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\output.log output.log
+2022-01-06 14:52:22,889 INFO    SenderThread:2556 [dir_watcher.py:finish():327] scan save: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\requirements.txt requirements.txt
+2022-01-06 14:52:22,894 INFO    SenderThread:2556 [dir_watcher.py:finish():327] scan save: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\wandb-metadata.json wandb-metadata.json
+2022-01-06 14:52:22,897 INFO    SenderThread:2556 [dir_watcher.py:finish():327] scan save: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\wandb-summary.json wandb-summary.json
+2022-01-06 14:52:22,904 INFO    SenderThread:2556 [sender.py:transition_state():387] send defer: 6
+2022-01-06 14:52:22,905 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:22,908 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: defer
+2022-01-06 14:52:22,908 INFO    HandlerThread:2556 [handler.py:handle_request_defer():147] handle defer: 6
+2022-01-06 14:52:22,911 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: defer
+2022-01-06 14:52:22,911 INFO    SenderThread:2556 [sender.py:send_request_defer():383] handle sender defer: 6
+2022-01-06 14:52:22,912 INFO    SenderThread:2556 [file_pusher.py:finish():177] shutting down file pusher
+2022-01-06 14:52:23,009 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:23,010 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:23,111 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:23,112 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:23,215 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:23,216 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:23,318 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:23,318 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:23,420 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:23,420 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:23,522 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:23,523 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:23,624 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:23,625 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:23,700 INFO    Thread-16 :2556 [upload_job.py:push():137] Uploaded file D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\config.yaml
+2022-01-06 14:52:23,719 INFO    Thread-19 :2556 [upload_job.py:push():137] Uploaded file D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\wandb-summary.json
+2022-01-06 14:52:23,726 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:23,726 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:23,733 INFO    Thread-17 :2556 [upload_job.py:push():137] Uploaded file D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\output.log
+2022-01-06 14:52:23,735 INFO    Thread-18 :2556 [upload_job.py:push():137] Uploaded file D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\files\requirements.txt
+2022-01-06 14:52:23,828 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:23,829 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:23,931 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:23,931 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:23,936 INFO    Thread-11 :2556 [sender.py:transition_state():387] send defer: 7
+2022-01-06 14:52:23,936 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: defer
+2022-01-06 14:52:23,936 INFO    HandlerThread:2556 [handler.py:handle_request_defer():147] handle defer: 7
+2022-01-06 14:52:23,937 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: defer
+2022-01-06 14:52:23,937 INFO    SenderThread:2556 [sender.py:send_request_defer():383] handle sender defer: 7
+2022-01-06 14:52:24,033 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:24,460 INFO    SenderThread:2556 [sender.py:transition_state():387] send defer: 8
+2022-01-06 14:52:24,461 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:24,461 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: defer
+2022-01-06 14:52:24,461 INFO    HandlerThread:2556 [handler.py:handle_request_defer():147] handle defer: 8
+2022-01-06 14:52:24,461 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: defer
+2022-01-06 14:52:24,461 INFO    SenderThread:2556 [sender.py:send_request_defer():383] handle sender defer: 8
+2022-01-06 14:52:24,461 INFO    SenderThread:2556 [sender.py:transition_state():387] send defer: 9
+2022-01-06 14:52:24,462 DEBUG   SenderThread:2556 [sender.py:send():234] send: final
+2022-01-06 14:52:24,463 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: defer
+2022-01-06 14:52:24,463 DEBUG   SenderThread:2556 [sender.py:send():234] send: footer
+2022-01-06 14:52:24,463 INFO    HandlerThread:2556 [handler.py:handle_request_defer():147] handle defer: 9
+2022-01-06 14:52:24,463 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: defer
+2022-01-06 14:52:24,463 INFO    SenderThread:2556 [sender.py:send_request_defer():383] handle sender defer: 9
+2022-01-06 14:52:24,562 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: poll_exit
+2022-01-06 14:52:24,562 DEBUG   SenderThread:2556 [sender.py:send_request():248] send_request: poll_exit
+2022-01-06 14:52:24,563 INFO    SenderThread:2556 [file_pusher.py:join():182] waiting for file pusher
+2022-01-06 14:52:25,553 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: get_summary
+2022-01-06 14:52:25,553 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: sampled_history
+2022-01-06 14:52:25,554 DEBUG   HandlerThread:2556 [handler.py:handle_request():130] handle_request: shutdown
+2022-01-06 14:52:25,554 INFO    HandlerThread:2556 [handler.py:finish():731] shutting down handler
+2022-01-06 14:52:26,464 INFO    WriterThread:2556 [datastore.py:close():281] close: D:\GitHub\OnePunch\OnepunchPrompt_for_new_transformers\wandb\run-20220106_145213-2ek5b478\run-2ek5b478.wandb
+2022-01-06 14:52:26,551 INFO    SenderThread:2556 [sender.py:finish():1070] shutting down sender
+2022-01-06 14:52:26,551 INFO    SenderThread:2556 [file_pusher.py:finish():177] shutting down file pusher
+2022-01-06 14:52:26,551 INFO    SenderThread:2556 [file_pusher.py:join():182] waiting for file pusher
+2022-01-06 14:52:26,554 INFO    MainThread:2556 [internal.py:handle_exit():77] Internal process exited
