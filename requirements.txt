@@ -1,0 +1,14 @@
+torch==1.10  %pip3 install torch==1.10.0+cu102 torchvision==0.11.1+cu102 torchaudio===0.10.0+cu102 -f https://download.pytorch.org/whl/cu102/torch_stable.html
+Looking in links: https://download.pytorch.org/whl/cu102/torch_stable.html
+
+transformers==4.12.5
+nltk==3.6.5
+
+sentencepiece==0.1.96
+scikit-learn==0.24.2
+tensorboardX
+yacs
+dill
+datasets
+rouge==1.0.0
+scipy==1.4.1
