@@ -134,8 +134,13 @@ Prefix_trainer=PrefixTrainer(
     )
 
 #Prefix_trainer.train()
-test_dataset_path="../data/webnlg_challenge_2017/test.json"
-PrefixModel.generate_to_files(current_dataset_path=test_dataset_path)
+# if args.dataset=='e2e':
+#     test_dataset_path="../data/e2e_data/src1_test.txt"
+# elif args.dataset=='webnlg':
+#     test_dataset_path="../data/webnlg_challenge_2017/test.json"
+# elif args.dataset=='dart':
+#     test_dataset_path="../data/dart/dart-v1.1.1-full-test.json"
+# PrefixModel.generate_to_files(current_dataset_path=test_dataset_path)
 
 # gen_s,refs_S=PrefixModel.get_past_key_values(PrefixModel.test_dataset_path)
 #pretrained_model.tokenizer.add_special_tokens({'pad_token': '[PAD]'})

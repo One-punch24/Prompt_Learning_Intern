@@ -186,10 +186,12 @@ class PrefixTrainer:
                                                         block_size=1024,
                                                         bos_tok=self.tokenizer.bos_token,
                                                         eos_tok=self.tokenizer.eos_token, )
+            self.test_dataset_path =dataset_path +'test.json'
         elif self.args.dataset=='e2e':
             dataset_path="../data/e2e_data/src1_"
             self.train_dataset_path = dataset_path + "train.txt"
             self.valid_dataset_path = dataset_path + "valid.txt"
+            self.test_dataset_path =dataset_path +'test.txt'
 
             self.train_dataset = LineByLineData2TextTextDataset(self.tokenizer, self.train_dataset_path,
                                                         block_size=1024,
@@ -366,9 +368,9 @@ class PrefixTrainer:
                         epoch, global_step,(tot_loss - log_loss) / self.args.step_size,self.lr_scheduler.get_last_lr()[0],eval_ppl),flush=True)
                     log_loss = tot_loss
 
-                    if self.model.model_mode=="PrefixModel" and t>=self.args.start_wandb_log:
-                        gen_s, refs_s = self.model.generate_to_files(current_dataset_path=self.test_dataset_path)
-                        bleu_score=evaluate_blue(gen_s,refs_s)
+                    if self.model.model_mode=="PrefixModel" :
+                        # gen_s, refs_s = self.model.generate_to_files(current_dataset_path=self.test_dataset_path)
+                        # bleu_score=evaluate_blue(gen_s,refs_s)
 
 
                         weight_1_norm, weight_2_norm, bias_1_norm, bias_2_norm, embed_norm = Norm_params(self.model)
@@ -379,7 +381,7 @@ class PrefixTrainer:
                                "embed_weight": embed_norm,
                                "step": step,
                                "loss":loss_,
-                               "bleu_score":bleu_score,
+                               # "bleu_score":bleu_score,
                                "eval_ppl":eval_ppl,
 
                                })
@@ -412,64 +414,9 @@ class PrefixTrainer:
                             wandb.log({"attn_proj_norms_bias_layer_"+str(sel): attn_proj_norms_bias[sel]})
                             wandb.log({"mlp_fc_norms_bias_layer_"+str(sel): mlp_fc_norms_bias[sel]})
                             wandb.log({"mlp_proj_norms_bias_layer_"+str(sel): mlp_proj_norms_bias[sel]})
-                            # layer_attn_attn_norms.append(attn_attn_norms)
-                            # layer_attn_proj_norms.append(attn_proj_norms)
-                            # layer_mlp_fc_norms.append(mlp_fc_norms)
-                            # layer_mlp_proj_norms.append(mlp_proj_norms)
-        # def trans(input):
-        #     input=np.array(input)
-        #     input=np.transpose(input,(1,0))
-        #     input =list(input)
-        #     return input
-        # if self.model.model_mode=="FineTune":
-        #     print("Compute norm for finetune")
-        #     layer_attn_attn_norms=trans(layer_attn_attn_norms)
-        #     layer_attn_proj_norms=trans(layer_attn_proj_norms)
-        #     layer_mlp_fc_norms=trans(layer_mlp_fc_norms)
-        #     layer_mlp_proj_norms=trans(layer_mlp_proj_norms)
-        #     print(layer_mlp_proj_norms)
-        #     attn_attn_norms_keys=[]
-        #     attn_proj_norms_keys=[]
-        #     mlp_fc_norms_keys=[]
-        #     mlp_proj_norms_keys=[]
-        #     print(len(layer_mlp_proj_norms[0]))
-        #     for i in range(len(layer_mlp_proj_norms)):  # i 是层数
-        #         attn_attn_norms_keys.append("attn_attn_norms_keys"+str(i))
-        #         attn_proj_norms_keys.append("attn_proj_norms_keys"+str(i))
-        #         mlp_fc_norms_keys.append("mlp_fc_norms_keys"+str(i))
-        #         mlp_proj_norms_keys.append("mlp_proj_norms_keys"+str(i))
-        #     print("len1:",len(layer_attn_attn_norms))
-        #     print("len2:", len(attn_attn_norms_keys))
-
-            # wandb.log({"attn_attn_norms": wandb.plot.line_series(
-            #     xs=range(len(attn_attn_norms_keys)),
-            #         ys=[layer_attn_attn_norms[sel]],
-            #         keys=[attn_attn_norms_keys[sel]],
-            #         title="attn_attn_norms",
-            #         xname="x units")})
-            # print([layer_attn_attn_norms[sel]])
-            # wandb.log({"attn_proj_norms": wandb.plot.line_series(
-            #     xs=range(len(attn_proj_norms_keys)),
-            #         ys=[layer_attn_proj_norms[sel]],
-            #         keys=[attn_proj_norms_keys[sel]],
-            #         title="attn_proj_norms",
-            #         xname="x units")})
-            # print([layer_attn_proj_norms[sel]])
-            # wandb.log({"mlp_fc_norms": wandb.plot.line_series(
-            #     xs=range(len(mlp_fc_norms_keys)),
-            #         ys=[layer_mlp_fc_norms[sel]],
-            #         keys=[mlp_fc_norms_keys[sel]],
-            #         title="mlp_fc_norms",
-            #         xname="x units")})
-            #
-            # wandb.log({"mlp_proj_norms": wandb.plot.line_series(
-            #     xs=range(len(mlp_proj_norms_keys)),
-            #         ys=[layer_mlp_proj_norms[sel]],
-            #         keys=[mlp_proj_norms_keys[sel]],
-            #         title="mlp_proj_norms",
-            #         xname="x units")})
-            #print("shit")
-        self.save_prefix_()
+        # Generate
+        gen_s, refs_s = self.model.generate_to_files(current_dataset_path=self.test_dataset_path)
+        bleu_score=evaluate_blue(gen_s,refs_s)
 
 
     def evaluation(self):

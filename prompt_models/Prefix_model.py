@@ -381,8 +381,9 @@ class PrefixTuningModel(nn.Module):
         if self.args.dataset=="webnlg":
             full_dict=read_webnlg_files(current_dataset_path,tokenizer)
         elif self.args.dataset=="e2e":
-            fulle_dict=read_e2e_files(current_dataset_path,tokenizer)
-
+            full_dict=read_e2e_files(current_dataset_path,tokenizer)
+        elif self.args.dataset=='dart':
+            full_dict=read_triples_files(current_dataset_path,tokenizer)
         print(len(tokenizer))
         # if self.args.model_mode=="PrefixModel":
         #     del self.pretrained_model
@@ -393,7 +394,12 @@ class PrefixTuningModel(nn.Module):
         for idx, text_array in enumerate(full_dict):
             refs_s=[]
             #prefix = self.args.prefix if self.args.prefix else self.args.padding_text
-            text=text_array[0]
+            if self.args.dataset=="webnlg":
+                text=text_array[0]
+            elif self.args.dataset=="e2e":
+                text=text_array
+            elif self.args.dataset=="dart":
+                text=text_array[0]
             refs=full_dict[text_array]
             refs_s.append(refs)
             input_ids = tokenizer.encode( text, add_special_tokens=False, return_tensors="pt")
@@ -407,23 +413,29 @@ class PrefixTuningModel(nn.Module):
 
             # Decode text
             text = tokenizer.decode(generated_sequence, clean_up_tokenization_spaces=True)
-            ## AD
-            #text = text[: text.find(self.args.stop_token) ]
 
-            # # Add the prompt at the beginning of the sequence. Remove the excess text that was used for pre-processing
-            # total_sequence = (
-            #         prompt_text + text[len(tokenizer.decode(encoded_prompt[0], clean_up_tokenization_spaces=True)):]
-            # )
-            #
-            # generated_sequences.append(total_sequence)
-            # print(total_sequence)
-            ##
+            '''
+            # print(text)
+            # text_output = text[len(generated_sequence):]
+            # idx_end = text_output.find(tokenizer.eos_token)
+            # if idx_end >= 0:
+            #     text_output = text_output[:idx_end]
+            # text_output = text_output.strip()
+            '''
             print(text)
-            text_output = text[len(generated_sequence):]
+            text_output = text
             idx_end = text_output.find(tokenizer.eos_token)
             if idx_end >= 0:
-                text_output = text_output[:idx]
-            text_output = text_output.strip()
+                text_output = text_output[idx_end:]
+            idx_end_2= text_output.find(tokenizer.eos_token)
+            # Generate endoftext at the end
+            if idx_end>=0:
+                text_output = text_output[14:-14]
+            # Generate no endoftext at the end   
+            else:
+                text_output = text_output[14:]
+            if idx==1:
+                print("\n CHECK \n",text_output)
             out.append(text_output)
         return out,refs_s
         with open(write_path, 'w', ) as f:
