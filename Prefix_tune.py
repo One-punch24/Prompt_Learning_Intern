@@ -133,7 +133,7 @@ Prefix_trainer=PrefixTrainer(
     args=args,
     )
 
-#Prefix_trainer.train()
+Prefix_trainer.train()
 # if args.dataset=='e2e':
 #     test_dataset_path="../data/e2e_data/src1_test.txt"
 # elif args.dataset=='webnlg':

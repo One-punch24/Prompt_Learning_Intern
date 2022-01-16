@@ -386,7 +386,7 @@ class PrefixTrainer:
 
                                })
                         print("Norm",weight_1_norm, weight_2_norm, bias_1_norm, bias_2_norm, embed_norm)
-                    elif self.model.model_mode=="FineTune" and t>=self.args.start_wandb_log:
+                    elif self.model.model_mode=="FineTune":
                         sel=self.args.sel
                         if sel==-1:
                             attn_attn_norms, attn_proj_norms, mlp_fc_norms, mlp_proj_norms, attn_attn_norms_bias, attn_proj_norms_bias, mlp_fc_norms_bias, mlp_proj_norms_bias = Norm_params_finetune(
@@ -414,9 +414,14 @@ class PrefixTrainer:
                             wandb.log({"attn_proj_norms_bias_layer_"+str(sel): attn_proj_norms_bias[sel]})
                             wandb.log({"mlp_fc_norms_bias_layer_"+str(sel): mlp_fc_norms_bias[sel]})
                             wandb.log({"mlp_proj_norms_bias_layer_"+str(sel): mlp_proj_norms_bias[sel]})
+        # Save
+        Save_path="ckpt/"+str(self.args.dataset)+\
+        "_"+str(self.args.model_mode)+"_"+str(self.args.epochs)+"_"+str(self.args.lr)+".ckpt"
+        self.save_prefix_(Save_path)
         # Generate
         gen_s, refs_s = self.model.generate_to_files(current_dataset_path=self.test_dataset_path)
-        bleu_score=evaluate_blue(gen_s,refs_s)
+        bleu_score=evaluate_bleu(gen_s,refs_s)
+        print("Final Gen Bleu",bleu_score)
 
 
     def evaluation(self):

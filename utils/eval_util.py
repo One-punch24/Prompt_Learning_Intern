@@ -13,9 +13,9 @@ def postprocess_text(preds, references_s):
     return preds, references_s
 
 
-def evaluate_blue( gen_s, refs_s):
+def evaluate_bleu( gen_s, refs_s):
     processed_preds, processed_golds = postprocess_text(gen_s, refs_s)
-    metric = load_metric("sacreblue")
+    metric = load_metric("sacrebleu")
 
 
     res = metric.compute(predictions=processed_preds, references=processed_golds)
