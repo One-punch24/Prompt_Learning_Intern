@@ -1,4 +1,0 @@
-
-{'state': {}, 'param_groups': [{'weight_decay': 0.0, 'lr': 5e-05, 'betas': (0.9, 0.999), 'eps': 1e-08, 'correct_bias': True, 'params': [0, 1, 2]}, {'weight_decay': 0.0, 'lr': 5e-05, 'betas': (0.9, 0.999), 'eps': 1e-08, 'correct_bias': True, 'params': [3, 4]}]}
-Fd_time 13.650808334350586 Bd_Time 12.251133918762207 Update_Time 0.2582390308380127  Epoch 0, global_step 500 average loss: 54.33286669921875 lr: 4.9405681683109475e-05 eval_ppl: 36.66056823730469
-Fd_time 27.354892015457153 Bd_Time 24.426767826080322 Update_Time 0.5147037506103516  Epoch 0, global_step 1000 average loss: 34.02119658660889 lr: 4.881136336621895e-05 eval_ppl: 35.10490036010742
