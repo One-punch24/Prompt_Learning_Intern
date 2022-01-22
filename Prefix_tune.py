@@ -54,12 +54,14 @@ parser.add_argument("--seed",type=int,default=101)
 parser.add_argument("--prefix_save_path",type=str,default=None)
 parser.add_argument("--prefix_load_path",type=str,default=None)
 parser.add_argument("--write_path",type=str,default="Generation.txt")
-parser.add_argument("--sel",type=int,default=0)
+parser.add_argument("--sel",type=int,default=-1)
 
 
 parser.add_argument("--step_size",type=int,default=500)
 parser.add_argument("--project_name",default="Webnlg_PT_FT")
 parser.add_argument("--start_wandb_log", type=int, default=1)
+parser.add_argument("--train",type=str,default='train')
+parser.add_argument("--log_mode",type=str,default='Log_Bleu')
 
 args = parser.parse_args()
 args.device=torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -133,36 +135,5 @@ Prefix_trainer=PrefixTrainer(
     args=args,
     )
 
-Prefix_trainer.train()
-# if args.dataset=='e2e':
-#     test_dataset_path="../data/e2e_data/src1_test.txt"
-# elif args.dataset=='webnlg':
-#     test_dataset_path="../data/webnlg_challenge_2017/test.json"
-# elif args.dataset=='dart':
-#     test_dataset_path="../data/dart/dart-v1.1.1-full-test.json"
-# PrefixModel.generate_to_files(current_dataset_path=test_dataset_path)
+Prefix_trainer.train()    
 
-# gen_s,refs_S=PrefixModel.get_past_key_values(PrefixModel.test_dataset_path)
-#pretrained_model.tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-# #PreTrainedTokenizerFast(name_or_path='gpt2-medium', vocab_size=50257, model_max_len=1024, is_fast=True, padding_side='right',
-# #special_tokens={'bos_token': '<|endoftext|>', 'eos_token': '<|endoftext|>', 'unk_token': '<|endoftext|>'})
-# #print(config)
-# #print(model.config)
-# print(pretrained_model.config.is_encoder_decoder)  # False
-# model=PrefixTuningModel(pretrained_model=pretrained_model,
-#                         tokenizer=tokenizer,
-#                         )
-
-# The pipeline of huggingface is more like a generator in Prefix tuning, it finishes the work of generation
-
-
-'''
-Train, Evaluate, Test
-'''
-# trainer=PrefixTrainer()
-# eval_output = trainer.evaluate(train_dataset)
-
-
-# def Training_Args_Setup(args):
-#     args.beta1=0.9
-#     args.beta2=0.999

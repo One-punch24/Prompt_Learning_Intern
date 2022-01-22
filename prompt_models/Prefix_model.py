@@ -7,7 +7,7 @@ from torch.nn import CrossEntropyLoss
 import json
 import logging
 import transformers
-
+import copy
 from transformers import PretrainedConfig
 from transformers import GPT2Config
 from transformers import GPT2LMHeadModel
@@ -332,24 +332,20 @@ class PrefixTuningModel(nn.Module):
         loss = loss.mean()
         return loss
 
-    def save(self, prefix_save_path):
-        # Only in charge of
-        pass
 
-    def load(self,prefix_load_path):
-        pass
 
 
 
     def generate(self,
                  input_ids,
+                 ptm,
                  group_prefix=None,
                  group_input_tokens=None,
                  ):
         prefix_prompt=self.get_past_key_values(batch_size=1)
         prefix_prompt = [x.expand(-1, self.generation_arguments['num_beams'], -1, -1, -1) for x in prefix_prompt]
 
-        output_sentences=self.pretrained_model.generate(
+        output_sentences=ptm.generate(
             input_ids=input_ids,
             emb_match=None,
             past_key_values= prefix_prompt if self.args.model_mode=="PrefixModel" else None,#prefix_prompt
@@ -389,10 +385,14 @@ class PrefixTuningModel(nn.Module):
         #     del self.pretrained_model
         #     self.pretrained_model=GPT2LMHeadModel.from_pretrained(pretrained_model_name_or_path=self.args.model_name_or_path,cache_dir=self.args.cache_dir)
         #     self.pretrained_model.to(self.args.device)
-        self.pretrained_model.resize_token_embeddings(len(tokenizer))
+        
+
+        previous_pretrained_model=copy.deepcopy(self.pretrained_model)
+        previous_pretrained_model.resize_token_embeddings(len(tokenizer))
         self.to(self.args.device)
+        refs_s=[]
         for idx, text_array in enumerate(full_dict):
-            refs_s=[]
+            
             #prefix = self.args.prefix if self.args.prefix else self.args.padding_text
             if self.args.dataset=="webnlg":
                 text=text_array[0]
@@ -405,7 +405,7 @@ class PrefixTuningModel(nn.Module):
             input_ids = tokenizer.encode( text, add_special_tokens=False, return_tensors="pt")
             input_ids = input_ids.to(self.args.device)
 
-            out_sentence=self.generate(input_ids)[0]
+            out_sentence=self.generate(input_ids,ptm=previous_pretrained_model)[0]
             # print(out_sentence)
             print("=== GENERATED SEQUENCE {} ===".format(idx + 1))
             # args.stop_token = tokenizer.eos_token
@@ -429,18 +429,25 @@ class PrefixTuningModel(nn.Module):
                 text_output = text_output[idx_end:]
             idx_end_2= text_output.find(tokenizer.eos_token)
             # Generate endoftext at the end
-            if idx_end>=0:
+            if idx_end_2>=0:
                 text_output = text_output[14:-14]
             # Generate no endoftext at the end   
             else:
                 text_output = text_output[14:]
             if idx==1:
                 print("\n CHECK \n",text_output)
+                print(refs)
+            print(text_output)
             out.append(text_output)
-        return out,refs_s
         with open(write_path, 'w', ) as f:
-                for i in out:
-                    f.write(i + '\n')
+            for i in out:
+                f.write(i + '\n')
+        # if self.args.model_mode=="PrefixModel":
+        #     self.pretrained_model=previous_pretrained_model
+        # elif self.args.model_mode=="FineTune":
+        #     self.pretrained_model.resize_token_embeddings(len(tokenizer)+1)
+        return out,refs_s
+
 
 
 

@@ -1,0 +1,7 @@
+
+{'state': {}, 'param_groups': [{'weight_decay': 0.0, 'lr': 5e-05, 'betas': (0.9, 0.999), 'eps': 1e-08, 'correct_bias': True, 'params': [0, 1, 2]}, {'weight_decay': 0.0, 'lr': 5e-05, 'betas': (0.9, 0.999), 'eps': 1e-08, 'correct_bias': True, 'params': [3, 4]}]}
+Fd_time 13.038803339004517 Bd_Time 11.741206645965576 Update_Time 0.268949031829834  Epoch 0, global_step 500 average loss: 57.39327537155151 lr: 4.960102138525375e-05 eval_ppl: 38.57649230957031
+Fd_time 25.940091371536255 Bd_Time 23.34768557548523 Update_Time 0.514925479888916  Epoch 0, global_step 1000 average loss: 35.309470592498776 lr: 4.92020427705075e-05 eval_ppl: 36.04094696044922
+Fd_time 39.120112895965576 Bd_Time 35.39957785606384 Update_Time 0.7578978538513184  Epoch 0, global_step 1500 average loss: 33.84764774513245 lr: 4.880306415576125e-05 eval_ppl: 34.063350677490234
+Fd_time 51.65546751022339 Bd_Time 46.86792588233948 Update_Time 0.9936211109161377  Epoch 0, global_step 2000 average loss: 33.725674587249756 lr: 4.8404085541015006e-05 eval_ppl: 33.44613265991211
+Fd_time 64.43590569496155 Bd_Time 58.47059679031372 Update_Time 1.2360742092132568  Epoch 0, global_step 2500 average loss: 31.83530732345581 lr: 4.8005106926268755e-05 eval_ppl: 32.888038635253906

@@ -297,9 +297,11 @@ class PrefixTrainer:
         layer_attn_proj_norms = []
         layer_mlp_fc_norms = []
         layer_mlp_proj_norms = []
+        name=self.args.dataset+"_"+self.args.model_mode+\
+            "_epochs_"+str(self.args.epochs)+"_lr_"+str(self.args.lr)+"_"+self.args.log_mode
         wandb.init(
             project=self.args.project_name,
-            # name="Prefix_norm",
+            name=name,
             # entity='Shuailong Zhu',
         )
         train_dataloader=self.get_train_dataloader(self.train_dataset)
@@ -312,7 +314,11 @@ class PrefixTrainer:
         self.create_optimizer_and_scheduler(total_step)
         #dict=read_webnlg_files(self.test_dataset_path,self.tokenizer)
 
-
+        self.model.to(self.args.device)
+        #total_time=0.0
+        fd_total_time=0.0
+        bd_total_time=0.0
+        update_total_time=0.0
         for epoch in range(int(self.args.epochs)):
             # self.model.eval()
             # self.model.pretrained_model.eval()
@@ -331,7 +337,7 @@ class PrefixTrainer:
                 input_=self._prepare_inputs(inputs)
 
                 #self.load_prefix_debug()  有问题，表示会干扰；
-                self.model.to(self.args.device)
+                
                 #self.load_prefix_debug()
                 #self.model.generate_to_files(self.test_dataset_path)
                 global_step += 1
@@ -342,19 +348,39 @@ class PrefixTrainer:
            #  50,  8520,  1058,   366,    32,   283,  7537,    11, 16490,     1,
            # 220, 50256,   383,   317,   283,  7537,   318,   262,  9003,   286,
            # 317,   283,  7537,    11, 16490,    13,   220, 50256]])
+                '''
+                start_time=time.time()
                 out,loss = self.model(**input_)
-
-                #loss=o[0]
-
-
-
                 loss.backward()
                 tot_loss += loss.item()
                 torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
                 self.optimizer.step()
+                end_time=time.time()
+                total_time+=end_time-start_time
                 self.lr_scheduler.step()
                 self.optimizer.zero_grad()
+                '''
+                fd_start_time=time.time()
+                out,loss = self.model(**input_)
+                fd_end_time=time.time()
 
+                bd_start_time=time.time()
+                loss.backward()
+                bd_end_time=time.time()
+
+                tot_loss += loss.item()
+                torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
+
+                update_start_time=time.time()
+                self.optimizer.step()
+                update_end_time=time.time()
+
+                fd_total_time+=fd_end_time-fd_start_time
+                bd_total_time+=bd_end_time-bd_start_time
+                update_total_time+=update_end_time-update_start_time
+
+                self.lr_scheduler.step()
+                self.optimizer.zero_grad()
                 if global_step % self.args.step_size == 0:
                     t=global_step / self.args.step_size
                     # if global_step==1500:
@@ -364,7 +390,7 @@ class PrefixTrainer:
                     #self.save_prefix_()
                     loss_=(tot_loss - log_loss) / self.args.step_size
                     eval_ppl = self.evaluation()
-                    print("Epoch {}, global_step {} average loss: {} lr: {} eval_ppl: {}".format(
+                    print("Fd_time {} Bd_Time {} Update_Time {}  Epoch {}, global_step {} average loss: {} lr: {} eval_ppl: {}".format(fd_total_time,bd_total_time,update_total_time,
                         epoch, global_step,(tot_loss - log_loss) / self.args.step_size,self.lr_scheduler.get_last_lr()[0],eval_ppl),flush=True)
                     log_loss = tot_loss
 
@@ -372,23 +398,46 @@ class PrefixTrainer:
                         # gen_s, refs_s = self.model.generate_to_files(current_dataset_path=self.test_dataset_path)
                         # bleu_score=evaluate_blue(gen_s,refs_s)
 
+                        if self.args.log_mode=="No_Log_Bleu":
+                            weight_1_norm, weight_2_norm, bias_1_norm, bias_2_norm, embed_norm = Norm_params(self.model)
+                            wandb.log({"weight_1": weight_1_norm,
+                                "weight_2": weight_2_norm,
+                                "bias_1": bias_1_norm,
+                                "bias_2": bias_2_norm,
+                                "embed_weight": embed_norm,
+                                "step": step,
+                                "loss":loss_,
+                                "eval_ppl":eval_ppl,
 
-                        weight_1_norm, weight_2_norm, bias_1_norm, bias_2_norm, embed_norm = Norm_params(self.model)
-                        wandb.log({"weight_1": weight_1_norm,
-                               "weight_2": weight_2_norm,
-                               "bias_1": bias_1_norm,
-                               "bias_2": bias_2_norm,
-                               "embed_weight": embed_norm,
-                               "step": step,
-                               "loss":loss_,
-                               # "bleu_score":bleu_score,
-                               "eval_ppl":eval_ppl,
-
-                               })
-                        print("Norm",weight_1_norm, weight_2_norm, bias_1_norm, bias_2_norm, embed_norm)
+                                })
+                            print("Norm",weight_1_norm, weight_2_norm, bias_1_norm, bias_2_norm, embed_norm)
+                        elif self.args.log_mode=="Log_Bleu":
+                            gen_s, refs_s = self.model.generate_to_files(current_dataset_path=self.test_dataset_path)
+                            sacrebleu_score=evaluate_bleu(gen_s,refs_s,"sacrebleu")
+                            bleu_score=evaluate_bleu(gen_s,refs_s,"bleu")
+                            wandb.log({
+                                "step": step,
+                                "loss":loss_,
+                                "bleu_score":bleu_score,
+                                "sacrebleu_score":sacrebleu_score,
+                                "eval_ppl":eval_ppl,
+                                "total_time":fd_total_time+bd_total_time+update_total_time,
+                                })
                     elif self.model.model_mode=="FineTune":
                         sel=self.args.sel
-                        if sel==-1:
+                        if self.args.log_mode=="Log_Bleu" and sel==-1:
+                            gen_s, refs_s = self.model.generate_to_files(current_dataset_path=self.test_dataset_path)
+                            sacrebleu_score=evaluate_bleu(gen_s,refs_s,"sacrebleu")
+                            bleu_score=evaluate_bleu(gen_s,refs_s,"bleu")
+                            wandb.log({
+                                "step": step,
+                                "loss":loss_,
+                                "bleu_score":bleu_score,
+                                "sacrebleu_score":sacrebleu_score,
+                                "eval_ppl":eval_ppl,
+                                "total_time":fd_total_time+bd_total_time+update_total_time,
+                                })
+                        elif self.args.log_mode=="No_Log_Bleu" and sel==-1:
                             attn_attn_norms, attn_proj_norms, mlp_fc_norms, mlp_proj_norms, attn_attn_norms_bias, attn_proj_norms_bias, mlp_fc_norms_bias, mlp_proj_norms_bias = Norm_params_finetune(
                                 self.model)
                             wandb.log({"attn_attn_norms_layer_" + "all": np.array(attn_attn_norms).sum(),
@@ -400,6 +449,8 @@ class PrefixTrainer:
                                        "mlp_fc_norms_bias_layer_" + "all": np.array(mlp_fc_norms_bias).sum(),
                                        "mlp_proj_norms_bias_layer_" + "all": np.array(mlp_proj_norms_bias).sum(),
                                        "loss":loss_,
+                                       "eval_ppl":eval_ppl,
+                                       "total_time":fd_total_time+bd_total_time+update_total_time,
                                        })
                         else:
 
@@ -414,14 +465,38 @@ class PrefixTrainer:
                             wandb.log({"attn_proj_norms_bias_layer_"+str(sel): attn_proj_norms_bias[sel]})
                             wandb.log({"mlp_fc_norms_bias_layer_"+str(sel): mlp_fc_norms_bias[sel]})
                             wandb.log({"mlp_proj_norms_bias_layer_"+str(sel): mlp_proj_norms_bias[sel]})
-        # Save
+        # Save Model
+
         Save_path="ckpt/"+str(self.args.dataset)+\
         "_"+str(self.args.model_mode)+"_"+str(self.args.epochs)+"_"+str(self.args.lr)+".ckpt"
-        self.save_prefix_(Save_path)
+        self.save_prefix_or_ptm(Save_path)
         # Generate
-        gen_s, refs_s = self.model.generate_to_files(current_dataset_path=self.test_dataset_path)
-        bleu_score=evaluate_bleu(gen_s,refs_s)
+        Write_path="generation/"+str(self.args.dataset)+\
+        "_"+str(self.args.model_mode)+"_"+str(self.args.epochs)+"_"+str(self.args.lr)+".txt"
+
+        gen_s, refs_s = self.model.generate_to_files(current_dataset_path=self.test_dataset_path,write_path=Write_path)
+
+        # Scoring
+        os.system("cd ../evaluation")
+        os.system("./run_eval_on_webnlg.sh > ../OnepunchPrompt/bleu_tmp.txt")
+        os.system("cd ../OnepunchPrompt")
+        if self.args.dataset=="webnlg":
+            with open("bleu_tmp.txt") as f:
+                line=f.readline()
+                while line:
+                    T=line.split("BLEU ALL:")
+                    if len(T)>1:
+                        bleu_official=float(T[1])
+                        break
+                    line=f.readline()
+            print("Final Officla Bleu",bleu_official)
+
+        sacrebleu_score=evaluate_bleu(gen_s,refs_s,"sacrebleu")
+        print("Final Gen SacreBleu",sacrebleu_score)
+        bleu_score=evaluate_bleu(gen_s,refs_s,"bleu")
         print("Final Gen Bleu",bleu_score)
+
+        
 
 
     def evaluation(self):
@@ -442,17 +517,25 @@ class PrefixTrainer:
             loss_s.append(loss.item())
         loss_s=torch.tensor(loss_s)
         return loss_s.mean()
-    def save_prefix_(self,save_path=None):
-        if save_path==None:
-            save_path=self.args.save_path+'prefix-new_transformers.ckpt'
+    def save_prefix_or_ptm(self,save_path):
+        if self.args.model_mode=="PrefixModel":
             torch.save({
             "prefix_control":self.model.decoder_control_trans.state_dict(),
             "prefix_wte":self.model.decoder_wte.state_dict()}, save_path)
+        elif self.args.model_mode=="FineTune":
+            torch.save({
+                "ptm":self.model.pretrained_model.state_dict(),
+            } ,save_path)
 
-    # def load_prefix_(self,load_path):
-    #     checkpoint = torch.load(load_path)
-    #     self.model.decoder_control_trans.load_state_dict(checkpoint['model_state_dict'])
-    #
+    def load_prefix_or_ptm(self,load_path):
+        checkpoint = torch.load(load_path)
+        if self.args.model_mode=="PrefixModel":
+            
+            self.model.decoder_control_trans.load_state_dict(checkpoint['prefix_control'])
+            self.model.decoder_wte.load_state_dict(checkpoint['prefix_wte'])
+        elif self.model_mode=="FineTune":
+            self.model.pretrained_model.load_state_dict(checkpoint["ptm"])
+    
     # def load_prefix_debug(self,load_path='prefix_lisa.ckpt'):
     #     #odict_keys(['wte.weight', 'control_trans.0.weight', 'control_trans.0.bias', 'control_trans.2.weight',
     #     #'control_trans.2.bias'])
