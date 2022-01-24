@@ -1,0 +1,37 @@
+{
+    "os": "Linux-5.4.0-42-generic-x86_64-with-debian-bullseye-sid",
+    "python": "3.7.0",
+    "heartbeatAt": "2022-01-24T03:35:39.320317",
+    "startedAt": "2022-01-24T03:35:36.817716",
+    "docker": null,
+    "gpu": "NVIDIA GeForce RTX 3090",
+    "gpu_count": 6,
+    "cpu_count": 64,
+    "cuda": null,
+    "args": [
+        "--dataset",
+        "dart",
+        "--model_mode",
+        "PT_plus_BiasTune",
+        "--epochs",
+        "10",
+        "--lr",
+        "0.00005",
+        "--num_token",
+        "10",
+        "--log_mode",
+        "No_Log_Bleu"
+    ],
+    "state": "running",
+    "program": "Prefix_tune.py",
+    "codePath": "Prefix_tune.py",
+    "git": {
+        "remote": "http://github.com/One-punch24/OnepunchPrompt.git",
+        "commit": "94fd7ebbe413883d44f532559c4dadc947a9c21f"
+    },
+    "email": "1482806551@qq.com",
+    "root": "/home/onepunch/OnePunch/OnepunchPrompt",
+    "host": "amax",
+    "username": "onepunch",
+    "executable": "/home/onepunch/anaconda3/envs/onepunch/bin/python"
+}

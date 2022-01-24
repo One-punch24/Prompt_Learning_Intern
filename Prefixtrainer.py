@@ -319,47 +319,23 @@ class PrefixTrainer:
         fd_total_time=0.0
         bd_total_time=0.0
         update_total_time=0.0
+        best_log_step=0
+        best_eval_ppl=0
         for epoch in range(int(self.args.epochs)):
             # self.model.eval()
             # self.model.pretrained_model.eval()
             #set_seed(self.args.seed)  这里加不加属实不影响
-            if self.model.model_mode=="PrefixModel":
+            if self.model.model_mode in ["PrefixModel"]:
                 self.model.eval()
-            elif self.model.model_mode=="FineTune":
+            elif self.model.model_mode in ["FineTune","BiasTune","PT_plus_BiasTune","PT_plus_FineTune"]:
                 self.model.pretrained_model.train()
             #self.model.pretrained_model.eval()
 
             for step, inputs in enumerate(train_dataloader):
-                ### TRIAL ###
-                #print(self.model.state_dict().keys())
-
-
                 input_=self._prepare_inputs(inputs)
 
-                #self.load_prefix_debug()  有问题，表示会干扰；
-                
-                #self.load_prefix_debug()
-                #self.model.generate_to_files(self.test_dataset_path)
                 global_step += 1
 
-                # if use_cuda:
-                #     inputs = inputs.cuda()
-           #      input_['input_ids']=torch.tensor([[  220,   930,   317,   283,  7537,    62, 16170,   634,  1058,  1748,
-           #  50,  8520,  1058,   366,    32,   283,  7537,    11, 16490,     1,
-           # 220, 50256,   383,   317,   283,  7537,   318,   262,  9003,   286,
-           # 317,   283,  7537,    11, 16490,    13,   220, 50256]])
-                '''
-                start_time=time.time()
-                out,loss = self.model(**input_)
-                loss.backward()
-                tot_loss += loss.item()
-                torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
-                self.optimizer.step()
-                end_time=time.time()
-                total_time+=end_time-start_time
-                self.lr_scheduler.step()
-                self.optimizer.zero_grad()
-                '''
                 fd_start_time=time.time()
                 out,loss = self.model(**input_)
                 fd_end_time=time.time()
@@ -390,81 +366,44 @@ class PrefixTrainer:
                     #self.save_prefix_()
                     loss_=(tot_loss - log_loss) / self.args.step_size
                     eval_ppl = self.evaluation()
+                    if best_eval_ppl==0:
+                        best_eval_ppl=eval_ppl
+                    elif eval_ppl<best_eval_ppl:
+                        best_log_step=global_step
+
+
                     print("Fd_time {} Bd_Time {} Update_Time {}  Epoch {}, global_step {} average loss: {} lr: {} eval_ppl: {}".format(fd_total_time,bd_total_time,update_total_time,
                         epoch, global_step,(tot_loss - log_loss) / self.args.step_size,self.lr_scheduler.get_last_lr()[0],eval_ppl),flush=True)
                     log_loss = tot_loss
 
-                    if self.model.model_mode=="PrefixModel" :
-                        # gen_s, refs_s = self.model.generate_to_files(current_dataset_path=self.test_dataset_path)
-                        # bleu_score=evaluate_blue(gen_s,refs_s)
 
-                        if self.args.log_mode=="No_Log_Bleu":
-                            weight_1_norm, weight_2_norm, bias_1_norm, bias_2_norm, embed_norm = Norm_params(self.model)
-                            wandb.log({"weight_1": weight_1_norm,
-                                "weight_2": weight_2_norm,
-                                "bias_1": bias_1_norm,
-                                "bias_2": bias_2_norm,
-                                "embed_weight": embed_norm,
-                                "step": step,
-                                "loss":loss_,
-                                "eval_ppl":eval_ppl,
 
-                                })
-                            print("Norm",weight_1_norm, weight_2_norm, bias_1_norm, bias_2_norm, embed_norm)
-                        elif self.args.log_mode=="Log_Bleu":
-                            gen_s, refs_s = self.model.generate_to_files(current_dataset_path=self.test_dataset_path)
-                            sacrebleu_score=evaluate_bleu(gen_s,refs_s,"sacrebleu")
-                            bleu_score=evaluate_bleu(gen_s,refs_s,"bleu")
-                            wandb.log({
-                                "step": step,
-                                "loss":loss_,
-                                "bleu_score":bleu_score,
-                                "sacrebleu_score":sacrebleu_score,
-                                "eval_ppl":eval_ppl,
-                                "total_time":fd_total_time+bd_total_time+update_total_time,
-                                })
-                    elif self.model.model_mode=="FineTune":
-                        sel=self.args.sel
-                        if self.args.log_mode=="Log_Bleu" and sel==-1:
-                            gen_s, refs_s = self.model.generate_to_files(current_dataset_path=self.test_dataset_path)
-                            sacrebleu_score=evaluate_bleu(gen_s,refs_s,"sacrebleu")
-                            bleu_score=evaluate_bleu(gen_s,refs_s,"bleu")
-                            wandb.log({
-                                "step": step,
-                                "loss":loss_,
-                                "bleu_score":bleu_score,
-                                "sacrebleu_score":sacrebleu_score,
-                                "eval_ppl":eval_ppl,
-                                "total_time":fd_total_time+bd_total_time+update_total_time,
-                                })
-                        elif self.args.log_mode=="No_Log_Bleu" and sel==-1:
-                            attn_attn_norms, attn_proj_norms, mlp_fc_norms, mlp_proj_norms, attn_attn_norms_bias, attn_proj_norms_bias, mlp_fc_norms_bias, mlp_proj_norms_bias = Norm_params_finetune(
-                                self.model)
-                            wandb.log({"attn_attn_norms_layer_" + "all": np.array(attn_attn_norms).sum(),
-                                       "attn_proj_norms_layer_" + "all": np.array(attn_proj_norms).sum(),
-                                       "mlp_fc_norms_layer_" + "all": np.array(mlp_fc_norms).sum(),
-                                       "mlp_proj_norms_layer_" + "all": np.array(mlp_proj_norms).sum(),
-                                       "attn_attn_norms_bias_layer_" + "all": np.array(attn_attn_norms_bias).sum(),
-                                       "attn_proj_norms_bias_layer_" + "all": np.array(attn_proj_norms_bias).sum(),
-                                       "mlp_fc_norms_bias_layer_" + "all": np.array(mlp_fc_norms_bias).sum(),
-                                       "mlp_proj_norms_bias_layer_" + "all": np.array(mlp_proj_norms_bias).sum(),
-                                       "loss":loss_,
-                                       "eval_ppl":eval_ppl,
-                                       "total_time":fd_total_time+bd_total_time+update_total_time,
-                                       })
-                        else:
 
-                            attn_attn_norms, attn_proj_norms, mlp_fc_norms, mlp_proj_norms,attn_attn_norms_bias, \
-                            attn_proj_norms_bias, mlp_fc_norms_bias,mlp_proj_norms_bias=Norm_params_finetune(self.model)
-                            wandb.log({"attn_attn_norms_layer_"+str(sel): attn_attn_norms[sel]})
-                            wandb.log({"attn_proj_norms_layer_"+str(sel): attn_proj_norms[sel]})
-                            wandb.log({"mlp_fc_norms_layer_"+str(sel): mlp_fc_norms[sel]})
-                            wandb.log({"mlp_proj_norms_layer_"+str(sel): mlp_proj_norms[sel]})
+                    if self.args.log_mode=="No_Log_Bleu":
+                        weight_1_norm, weight_2_norm, bias_1_norm, bias_2_norm, embed_norm = Norm_params(self.model)
+                        wandb.log({
+                            "step": step,
+                            "loss":loss_,
+                            "eval_ppl":eval_ppl,
+                            "total_time":fd_total_time+bd_total_time+update_total_time,
+                            })
 
-                            wandb.log({"attn_attn_norms_bias_layer_"+str(sel): attn_attn_norms_bias[sel]})
-                            wandb.log({"attn_proj_norms_bias_layer_"+str(sel): attn_proj_norms_bias[sel]})
-                            wandb.log({"mlp_fc_norms_bias_layer_"+str(sel): mlp_fc_norms_bias[sel]})
-                            wandb.log({"mlp_proj_norms_bias_layer_"+str(sel): mlp_proj_norms_bias[sel]})
+                    elif self.args.log_mode=="Log_Bleu":
+                        gen_s, refs_s = self.model.generate_to_files(current_dataset_path=self.test_dataset_path)
+                        sacrebleu_score=evaluate_bleu(gen_s,refs_s,"sacrebleu")
+                        bleu_score=evaluate_bleu(gen_s,refs_s,"bleu")
+                        wandb.log({
+                            "step": step,
+                            "loss":loss_,
+                            "bleu_score":bleu_score,
+                            "sacrebleu_score":sacrebleu_score,
+                            "eval_ppl":eval_ppl,
+                            "total_time":fd_total_time+bd_total_time+update_total_time,
+                            })
+
+        print("Best Log Step:", best_log_step)
+        print("Best Eval Ppl:",best_eval_ppl)
+
         # Save Model
 
         Save_path="ckpt/"+str(self.args.dataset)+\
@@ -477,24 +416,24 @@ class PrefixTrainer:
         gen_s, refs_s = self.model.generate_to_files(current_dataset_path=self.test_dataset_path,write_path=Write_path)
 
         # Scoring
-        os.system("cd ../evaluation")
-        os.system("./run_eval_on_webnlg.sh > ../OnepunchPrompt/bleu_tmp.txt")
-        os.system("cd ../OnepunchPrompt")
-        if self.args.dataset=="webnlg":
-            with open("bleu_tmp.txt") as f:
-                line=f.readline()
-                while line:
-                    T=line.split("BLEU ALL:")
-                    if len(T)>1:
-                        bleu_official=float(T[1])
-                        break
-                    line=f.readline()
-            print("Final Officla Bleu",bleu_official)
+        # os.system("cd ../evaluation")
+        # os.system("./run_eval_on_webnlg.sh > ../OnepunchPrompt/bleu_tmp.txt")
+        # os.system("cd ../OnepunchPrompt")
+        # if self.args.dataset=="webnlg":
+        #     with open("bleu_tmp.txt") as f:
+        #         line=f.readline()
+        #         while line:
+        #             T=line.split("BLEU ALL:")
+        #             if len(T)>1:
+        #                 bleu_official=float(T[1])
+        #                 break
+        #             line=f.readline()
+        #     print("Final Officla Bleu",bleu_official)
 
-        sacrebleu_score=evaluate_bleu(gen_s,refs_s,"sacrebleu")
-        print("Final Gen SacreBleu",sacrebleu_score)
-        bleu_score=evaluate_bleu(gen_s,refs_s,"bleu")
-        print("Final Gen Bleu",bleu_score)
+        # sacrebleu_score=evaluate_bleu(gen_s,refs_s,"sacrebleu")
+        # print("Final Gen SacreBleu",sacrebleu_score)
+        # bleu_score=evaluate_bleu(gen_s,refs_s,"bleu")
+        # print("Final Gen Bleu",bleu_score)
 
         
 

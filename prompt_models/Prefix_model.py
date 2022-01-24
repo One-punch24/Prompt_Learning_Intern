@@ -119,8 +119,10 @@ class PrefixTuningModel(nn.Module):
         # freeze pretrained parameters
         if self.model_mode=="PrefixModel":
             self.freeze_pretrained_model()
-        elif self.model_mode=='FineTune':
+        elif self.model_mode in ['FineTune',"PT_plus_FineTune"]:
             self.activate_pretrained_model()
+        elif self.model_mode==["PT_plus_BiasTune","BiasTune"]:
+            self.activate_PTM_Bias()
         # generation configuration
         if gen_args==None:
             self.generation_arguments = {
@@ -203,9 +205,9 @@ class PrefixTuningModel(nn.Module):
             tgt_attn=None,
             src=None,
             return_dict = None):
-        if self.model_mode=='PrefixModel':
+        if self.model_mode  in ['PrefixModel',"PT_plus_FineTune","PT_plus_BiasTune"]:
             past_key_values=self.get_past_key_values(input_ids.size()[0])
-        elif self.model_mode=='FineTune':
+        elif self.model_mode in ['FineTune',"BiasTune"]:
             past_key_values=None    #group_prefix group_input_tokens
 
         output=self.pretrained_model(
@@ -231,58 +233,18 @@ class PrefixTuningModel(nn.Module):
     def freeze_pretrained_model(self):
         for param in self.pretrained_model.parameters():
             param.requires_grad = False
+    def activate_PTM_Bias(self):
+        for key,param in self.pretrained_model.state_dict():
+            if key.endswith('bias'):
+                param.require_grad=True
+            else:
+                param.require_grad=False   
+
 
     def activate_pretrained_model(self):
         for param in self.pretrained_model.parameters():
             param.requires_grad = True
 
-    r"""
-        Left shift the label, and make label of the positions that are
-        not loss position to -100, which is the ignore index in pytorch's
-        loss function.
-
-        Args:
-            logits (:obj:`torch.Tensor`):
-            batch (:obj:`InputFeatures`): The input features of batchified data sequences.
-
-        Returns:
-            shift_logits (:obj:`torch.Tensor`):
-            shift_input_ids (:obj:`List[int]`):
-
-    """
-    '''
-        GPTLMHeadModel Code: 
-               hidden_states = transformer_outputs[0]
-
-        # Set device for model parallelism
-        if self.model_parallel:
-            torch.cuda.set_device(self.transformer.first_device)
-            hidden_states = hidden_states.to(self.lm_head.weight.device)
-
-        lm_logits = self.lm_head(hidden_states)
-
-        loss = None
-        if labels is not None:
-            # Shift so that tokens < n predict n
-            shift_logits = lm_logits[..., :-1, :].contiguous()
-            shift_labels = labels[..., 1:].contiguous()
-            # Flatten the tokens
-            loss_fct = CrossEntropyLoss()
-            loss = loss_fct(shift_logits.view(-1, shift_logits.size(-1)), shift_labels.view(-1))
-
-        if not return_dict:
-            output = (lm_logits,) + transformer_outputs[1:]
-            return ((loss,) + output) if loss is not None else output
-
-        return CausalLMOutputWithCrossAttentions(
-            loss=loss,
-            logits=lm_logits,
-            past_key_values=transformer_outputs.past_key_values,
-            hidden_states=transformer_outputs.hidden_states,
-            attentions=transformer_outputs.attentions,
-            cross_attentions=transformer_outputs.cross_attentions,
-        )
-        '''
 
         # Open Prompt Implementation: Pay attention that the shift label mask is
     def shift_logits_and_labels(self,
@@ -334,7 +296,7 @@ class PrefixTuningModel(nn.Module):
 
 
 
-
+    
 
     def generate(self,
                  input_ids,
@@ -345,10 +307,15 @@ class PrefixTuningModel(nn.Module):
         prefix_prompt=self.get_past_key_values(batch_size=1)
         prefix_prompt = [x.expand(-1, self.generation_arguments['num_beams'], -1, -1, -1) for x in prefix_prompt]
 
+        if self.model_mode  in ['PrefixModel',"PT_plus_FineTune","PT_plus_BiasTune"]:
+            past_key_values=prefix_prompt
+        elif self.model_mode in ['FineTune',"BiasTune"]:
+            past_key_values=None   
+
         output_sentences=ptm.generate(
             input_ids=input_ids,
             emb_match=None,
-            past_key_values= prefix_prompt if self.args.model_mode=="PrefixModel" else None,#prefix_prompt
+            past_key_values= past_key_values,
             max_length=self.generation_arguments['max_length']+input_ids.size()[1],
             min_length=5,
             temperature=self.generation_arguments['temperature'],

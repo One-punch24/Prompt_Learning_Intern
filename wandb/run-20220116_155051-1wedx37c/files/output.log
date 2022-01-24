@@ -1,7 +1,0 @@
-
-{'state': {}, 'param_groups': [{'weight_decay': 0.0, 'lr': 5e-05, 'betas': (0.9, 0.999), 'eps': 1e-08, 'correct_bias': True, 'params': [0, 1, 2]}, {'weight_decay': 0.0, 'lr': 5e-05, 'betas': (0.9, 0.999), 'eps': 1e-08, 'correct_bias': True, 'params': [3, 4]}]}
-Epoch 0, global_step 500 average loss: 55.687089433670046 lr: 4.861303744798891e-05 eval_ppl: 30.80937957763672
-tensor(13.1117, device='cuda:0') tensor(128.3012, device='cuda:0') tensor(0.4213, device='cuda:0') tensor(5.6666, device='cuda:0') tensor(71.1664, device='cuda:0')
-Norm tensor(13.1117, device='cuda:0') tensor(128.3012, device='cuda:0') tensor(0.4213, device='cuda:0') tensor(5.6666, device='cuda:0') tensor(71.1664, device='cuda:0')
-Epoch 0, global_step 1000 average loss: 29.618955565452577 lr: 4.722607489597781e-05 eval_ppl: 27.763137817382812
-tensor(13.1375, device='cuda:0') tensor(128.5177, device='cuda:0') tensor(0.4210, device='cuda:0') tensor(5.6748, device='cuda:0') tensor(71.1668, device='cuda:0')
