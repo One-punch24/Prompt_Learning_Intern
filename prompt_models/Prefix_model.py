@@ -119,9 +119,9 @@ class PrefixTuningModel(nn.Module):
         # freeze pretrained parameters
         if self.model_mode=="PrefixModel":
             self.freeze_pretrained_model()
-        elif self.model_mode in ['FineTune',"PT_plus_FineTune"]:
+        elif self.model_mode in ['FineTune',"PT_plus_FineTune",'FineTuneEval',"PT_plus_FineTuneEval"]:
             self.activate_pretrained_model()
-        elif self.model_mode==["PT_plus_BiasTune","BiasTune"]:
+        elif self.model_mode in ["PT_plus_BiasTune","BiasTune","PT_plus_BiasTuneEval","BiasTuneEval"]:
             self.activate_PTM_Bias()
         # generation configuration
         if gen_args==None:
@@ -205,9 +205,9 @@ class PrefixTuningModel(nn.Module):
             tgt_attn=None,
             src=None,
             return_dict = None):
-        if self.model_mode  in ['PrefixModel',"PT_plus_FineTune","PT_plus_BiasTune"]:
+        if self.model_mode  in ['PrefixModel',"PT_plus_FineTune","PT_plus_BiasTune","PT_plus_FineTuneEval","PT_plus_BiasTuneEval"]:
             past_key_values=self.get_past_key_values(input_ids.size()[0])
-        elif self.model_mode in ['FineTune',"BiasTune"]:
+        elif self.model_mode in ['FineTune',"BiasTune",'FineTuneEval',"BiasTuneEval"]:
             past_key_values=None    #group_prefix group_input_tokens
 
         output=self.pretrained_model(
@@ -234,11 +234,11 @@ class PrefixTuningModel(nn.Module):
         for param in self.pretrained_model.parameters():
             param.requires_grad = False
     def activate_PTM_Bias(self):
-        for key,param in self.pretrained_model.state_dict():
+        for key,param in self.pretrained_model.named_parameters():
             if key.endswith('bias'):
-                param.require_grad=True
+                param.requires_grad = True
             else:
-                param.require_grad=False   
+                param.requires_grad = False   
 
 
     def activate_pretrained_model(self):
@@ -307,9 +307,9 @@ class PrefixTuningModel(nn.Module):
         prefix_prompt=self.get_past_key_values(batch_size=1)
         prefix_prompt = [x.expand(-1, self.generation_arguments['num_beams'], -1, -1, -1) for x in prefix_prompt]
 
-        if self.model_mode  in ['PrefixModel',"PT_plus_FineTune","PT_plus_BiasTune"]:
+        if self.model_mode  in ['PrefixModel',"PT_plus_FineTune","PT_plus_BiasTune","PT_plus_FineTuneEval","PT_plus_BiasTuneEval"]:
             past_key_values=prefix_prompt
-        elif self.model_mode in ['FineTune',"BiasTune"]:
+        elif self.model_mode in ['FineTune',"BiasTune",'FineTuneEval',"BiasTuneEval"]:
             past_key_values=None   
 
         output_sentences=ptm.generate(
@@ -409,10 +409,6 @@ class PrefixTuningModel(nn.Module):
         with open(write_path, 'w', ) as f:
             for i in out:
                 f.write(i + '\n')
-        # if self.args.model_mode=="PrefixModel":
-        #     self.pretrained_model=previous_pretrained_model
-        # elif self.args.model_mode=="FineTune":
-        #     self.pretrained_model.resize_token_embeddings(len(tokenizer)+1)
         return out,refs_s
 
 

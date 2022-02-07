@@ -325,7 +325,7 @@ class PrefixTrainer:
             # self.model.eval()
             # self.model.pretrained_model.eval()
             #set_seed(self.args.seed)  这里加不加属实不影响
-            if self.model.model_mode in ["PrefixModel"]:
+            if self.model.model_mode in ["PrefixModel","FineTuneEval","BiasTuneEval","PT_plus_BiasTuneEval","PT_plus_FineTuneEval"]:
                 self.model.eval()
             elif self.model.model_mode in ["FineTune","BiasTune","PT_plus_BiasTune","PT_plus_FineTune"]:
                 self.model.pretrained_model.train()
@@ -368,12 +368,14 @@ class PrefixTrainer:
                     eval_ppl = self.evaluation()
                     if best_eval_ppl==0:
                         best_eval_ppl=eval_ppl
+                        best_log_step=global_step
                     elif eval_ppl<best_eval_ppl:
                         best_log_step=global_step
+                        best_eval_ppl=eval_ppl
 
 
-                    print("Fd_time {} Bd_Time {} Update_Time {}  Epoch {}, global_step {} average loss: {} lr: {} eval_ppl: {}".format(fd_total_time,bd_total_time,update_total_time,
-                        epoch, global_step,(tot_loss - log_loss) / self.args.step_size,self.lr_scheduler.get_last_lr()[0],eval_ppl),flush=True)
+                    print("Fd_time {} Bd_Time {} Update_Time {}  Epoch {}, global_step {} average loss: {} lr: {} eval_ppl: {} best_log_step: {}  best eval_ppl: {}".format(fd_total_time,bd_total_time,update_total_time,
+                        epoch, global_step,(tot_loss - log_loss) / self.args.step_size,self.lr_scheduler.get_last_lr()[0],eval_ppl,best_log_step,best_eval_ppl),flush=True)
                     log_loss = tot_loss
 
 
@@ -385,6 +387,7 @@ class PrefixTrainer:
                             "step": step,
                             "loss":loss_,
                             "eval_ppl":eval_ppl,
+                            "best_log_step":best_log_step,
                             "total_time":fd_total_time+bd_total_time+update_total_time,
                             })
 
@@ -457,22 +460,32 @@ class PrefixTrainer:
         loss_s=torch.tensor(loss_s)
         return loss_s.mean()
     def save_prefix_or_ptm(self,save_path):
-        if self.args.model_mode=="PrefixModel":
+        if self.args.model_mode in ["PrefixModel"]:
             torch.save({
             "prefix_control":self.model.decoder_control_trans.state_dict(),
             "prefix_wte":self.model.decoder_wte.state_dict()}, save_path)
-        elif self.args.model_mode=="FineTune":
+        elif self.args.model_mode in ["FineTune","BiasTune","FineTuneEval","BiasTuneEval"]:
             torch.save({
                 "ptm":self.model.pretrained_model.state_dict(),
             } ,save_path)
-
+        elif self.args.model_mode in ["PT_plus_FineTune","PT_plus_BiasTune",
+        "PT_plus_FineTuneEval","PT_plus_BiasTuneEval"]:
+            torch.save({
+                "ptm":self.model.pretrained_model.state_dict(),
+                "prefix_control":self.model.decoder_control_trans.state_dict(),
+                "prefix_wte":self.model.decoder_wte.state_dict()}, save_path)
     def load_prefix_or_ptm(self,load_path):
         checkpoint = torch.load(load_path)
-        if self.args.model_mode=="PrefixModel":
-            
+        if self.args.model_mode in ["PrefixModel"]:           
             self.model.decoder_control_trans.load_state_dict(checkpoint['prefix_control'])
             self.model.decoder_wte.load_state_dict(checkpoint['prefix_wte'])
-        elif self.model_mode=="FineTune":
+        elif self.model_mode in ["FineTune","BiasTune","FineTuneEval","BiasTuneEval"]:
+            self.model.pretrained_model.load_state_dict(checkpoint["ptm"])
+
+        elif self.model_mode in ["PT_plus_FineTune","PT_plus_BiasTune",
+        "PT_plus_FineTuneEval","PT_plus_BiasTuneEval"]:
+            self.model.decoder_control_trans.load_state_dict(checkpoint['prefix_control'])
+            self.model.decoder_wte.load_state_dict(checkpoint['prefix_wte'])
             self.model.pretrained_model.load_state_dict(checkpoint["ptm"])
     
     # def load_prefix_debug(self,load_path='prefix_lisa.ckpt'):
