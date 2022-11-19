@@ -1,74 +1,20 @@
-# Prompt Tuning Convergence
-
-## No Log Bleu
-
-### DART
-CUDA_VISIBLE_DEVICES=1 python Prefix_tune.py --dataset dart --model_mode PrefixModel --epochs 10 --lr 0.00005 --num_token 10 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=1 python Prefix_tune.py --dataset dart --model_mode FineTune --epochs 10 --lr 0.00005 --num_token 10 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=1 python Prefix_tune.py --dataset dart --model_mode BiasTune --epochs 10 --lr 0.00005 --num_token 10 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=1 python Prefix_tune.py --dataset dart --model_mode PT_plus_FineTune --epochs 10 --lr 0.00005 --num_token 10 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=1 python Prefix_tune.py --dataset dart --model_mode PT_plus_BiasTune --epochs 10 --lr 0.00005 --num_token 10 --log_mode No_Log_Bleu
-
-#### ADD
-
-CUDA_VISIBLE_DEVICES=0 python Prefix_tune.py --dataset dart --model_mode FineTuneEval --epochs 10 --lr 0.00005 --num_token 10 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=0 python Prefix_tune.py --dataset dart --model_mode BiasTuneEval --epochs 10 --lr 0.00005 --num_token 10 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=1 python Prefix_tune.py --dataset dart --model_mode PT_plus_FineTuneEval --epochs 10 --lr 0.00005 --num_token 10 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=1 python Prefix_tune.py --dataset dart --model_mode PT_plus_BiasTuneEval --epochs 10 --lr 0.00005 --num_token 10 --log_mode No_Log_Bleu
-
-### E2E
-
-CUDA_VISIBLE_DEVICES=2  python Prefix_tune.py --dataset e2e --model_mode PrefixModel --epochs 50 --lr 0.00008 --bsz 10 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=2  python Prefix_tune.py --dataset e2e --model_mode FineTune --epochs 50 --lr 0.00008 --bsz 10 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=2  python Prefix_tune.py --dataset e2e --model_mode BiasTune --epochs 50 --lr 0.00008 --bsz 10 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=2  python Prefix_tune.py --dataset e2e --model_mode PT_plus_FineTune --epochs 50 --lr 0.00008 --bsz 10 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=2  python Prefix_tune.py --dataset e2e --model_mode PT_plus_BiasTune --epochs 50 --lr 0.00008 --bsz 10 --log_mode No_Log_Bleu
-
-#### ADD
-
-CUDA_VISIBLE_DEVICES=2  python Prefix_tune.py --dataset e2e --model_mode FineTuneEval --epochs 50 --lr 0.00008 --bsz 10 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=2  python Prefix_tune.py --dataset e2e --model_mode BiasTuneEval --epochs 50 --lr 0.00008 --bsz 10 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=3  python Prefix_tune.py --dataset e2e --model_mode PT_plus_FineTuneEval --epochs 50 --lr 0.00008 --bsz 10 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=3  python Prefix_tune.py --dataset e2e --model_mode PT_plus_BiasTuneEval --epochs 50 --lr 0.00008 --bsz 10 --log_mode No_Log_Bleu
-
-### Webnlg
-
-CUDA_VISIBLE_DEVICES=3 python Prefix_tune.py --model_mode PrefixModel --epochs 50 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=3 python Prefix_tune.py --model_mode FineTune --epochs 50 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=3 python Prefix_tune.py --model_mode BiasTune --epochs 50 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=3 python Prefix_tune.py --model_mode PT_plus_FineTune --epochs 50 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=3 python Prefix_tune.py --model_mode PT_plus_BiasTune --epochs 50 --log_mode No_Log_Bleu
-
-#### ADD:
-
-CUDA_VISIBLE_DEVICES=4 python Prefix_tune.py --model_mode FineTuneEval --epochs 50 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=4 python Prefix_tune.py --model_mode BiasTuneEval --epochs 50 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=5 python Prefix_tune.py --model_mode PT_plus_FineTuneEval --epochs 50 --log_mode No_Log_Bleu
-
-CUDA_VISIBLE_DEVICES=5 python Prefix_tune.py --model_mode PT_plus_BiasTuneEval --epochs 50 --log_mode No_Log_Bleu
-
-## Log Bleu
-
-python Prefix_tune.py --dataset e2e --model_mode PrefixModel --epochs 5 --lr 0.00008 --bsz 10 --project_name Bleu_dynamic
-python Prefix_tune.py --dataset e2e --model_mode FineTune --epochs 5 --lr 0.00008 --bsz 10 --project_name Bleu_dynamic
+## Controllability, Convergence and Stability of Soft Prompt Tuning
+Aug.2021-Feb.2022
+Advisor: Prof. Lingpeng Kong
+Intern, Shanghai AI Lab
+• Target: Multiple forms of soft prompt tuning have been proposed as a parameter-efficient way to better
+utilize the pretrained language model. My target is to explore the probability of bringing more detailed
+control with it in NLG and analyze its performance, convergence, and generalization ability in both NLU
+and NLG tasks.
+• Dispersive soft prompts for fine-grained control in conditioned text generation: I design soft
+prompt series and separately embed them into the language model to instruct more fine-grained control on
+text generation and put up with the autoregression training scheme to tune the prompt series.
+• Instance-aware prompt injection: Due to the lack of instance-level information in prompt tuning, I
+design a preprocess-block for better instance information fusion. The improvement of convergence speed can
+be observed in NLU tasks.
+• Explore the convergence speed and generalization ability of parameter-efficient tuning: While
+comparing the convergence speed and generalization ability of Fine Tuning, Bitfit, Prompt Tuning, and
+Prefix Tuning for both NLG tasks (E2E and WebNLG) and NLU tasks (GLEU), I find that Prompt Tuning,
+Prefix Tuning, and BitFit exhibit similar behavior, which sacrifice convergence speed but contribute to
+better generalization ability in pretrained language model, while maintaining ideal performance.
 
